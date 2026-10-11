@@ -1,0 +1,38 @@
+/* Rondkijker: het panorama is het hele beeld, de bediening ligt er als rustige panelen overheen.
+   Bewust een donkere kijker (zoals een fotoviewer). Gedeeld door alle rondkijkers in woning-renders. */
+:root {
+  --bg: #12110f;
+  --paneel: rgba(18, 17, 15, 0.62);
+  --tekst: #e9e4da;
+  --zacht: #b7afa2;
+  --rand: rgba(233, 228, 218, 0.28);
+  --linnen: #e8e2d4;
+  --op-linnen: #1b1a17;
+  --font: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--tekst); font: 14px/1.4 var(--font); overflow: hidden; }
+canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+canvas.drag { cursor: grabbing; }
+.paneel { background: var(--paneel); border-radius: 8px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#kop { position: fixed; left: 16px; top: calc(12px + env(safe-area-inset-top, 0px)); right: 16px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; pointer-events: none; }
+#kop > * { pointer-events: auto; }
+#naam { padding: 8px 12px; }
+#naam a { color: var(--zacht); font-size: 12px; text-decoration: none; }
+#naam a:hover, #naam a:focus-visible { color: var(--linnen); }
+#naam h1 { margin: 2px 0 0; font-size: 17px; font-weight: 600; letter-spacing: 0.01em; text-wrap: balance; }
+#naam p { margin: 2px 0 0; color: var(--zacht); font-size: 13px; max-width: 58ch; }
+.rij { display: flex; flex-wrap: wrap; gap: 6px; }
+button { font: 600 13px var(--font); color: var(--tekst); background: var(--paneel); border: 1px solid var(--rand); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+button:hover { border-color: var(--linnen); }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--linnen); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--linnen); color: var(--op-linnen); border-color: var(--linnen); }
+#voet { position: fixed; left: 16px; right: 16px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; pointer-events: none; }
+#hud, #hulp { padding: 6px 10px; font-size: 13px; }
+#hud { font-variant-numeric: tabular-nums; }
+#hud b { color: var(--linnen); }
+#hulp { color: var(--zacht); }
+#laden { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; color: var(--zacht); }
+@media (max-width: 620px) { #hulp { display: none; } #naam p { display: none; } }

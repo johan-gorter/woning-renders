@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ronde bank · Woning Geulwijk</title>
+<meta name="description" content="Halfronde bank en twee draaifauteuils rond een grote ronde tafel, open naar de tv. Bij de ramen een zithoek met twee Emily&#x27;s; bureau, planten en lampen volgens feng shui.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="../kijker.css">
+</head>
+<body>
+<canvas id="c" aria-label="360-gradenpanorama; sleep om rond te kijken"></canvas>
+<div id="laden">Panorama laden…</div>
+<div id="kop">
+  <div id="naam" class="paneel">
+    <a href="../">← alle rondkijkers</a>
+    <h1 id="titel"></h1>
+    <p id="wat"></p>
+  </div>
+  <div class="rij" id="momenten" role="group" aria-label="Tijd van de dag"></div>
+  <div class="rij" id="plekken" role="group" aria-label="Standpunt"></div>
+</div>
+<div id="voet">
+  <div id="hud" class="paneel">kijkrichting <b id="richting">-</b> <span id="graden"></span> · zoom <span id="fov"></span>°</div>
+  <div id="hulp" class="paneel">slepen = rondkijken · scrollen of knijpen = zoom · pijltjes · 0 = beginstand</div>
+</div>
+<script>window.RONDKIJKER = {"naam": "Ronde bank", "plekken": [{"id": "keuken", "naam": "Vanaf de keuken", "kijk": 226.0, "wat": "Staand in de opening naar de keuken. Recht vooruit de schouw, links de zithoek bij de ramen, rechts de kring rond de tv.", "standpunt": "woonkamer-keuken-360"}, {"id": "bank", "naam": "Op de bank", "kijk": 38.0, "wat": "Zittend op de noordelijkste plek van de halfronde bank. Recht vooruit de tv op de schuine muur.", "standpunt": "woonkamer-tv-noord-360"}], "momenten": [{"id": "dag", "naam": "Overdag"}, {"id": "avond", "naam": "'s Avonds"}]};</script>
+<script src="../kijker.js"></script>
+</body>
+</html>

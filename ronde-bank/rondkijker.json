@@ -1,0 +1,32 @@
+{
+  "slug": "ronde-bank",
+  "naam": "Ronde bank",
+  "beschrijving": "Halfronde bank en twee draaifauteuils rond een grote ronde tafel, open naar de tv. Bij de ramen een zithoek met twee Emily's; bureau, planten en lampen volgens feng shui.",
+  "datum": "2026-10-11",
+  "momenten": [
+    {
+      "id": "dag",
+      "naam": "Overdag"
+    },
+    {
+      "id": "avond",
+      "naam": "'s Avonds"
+    }
+  ],
+  "plekken": [
+    {
+      "id": "keuken",
+      "naam": "Vanaf de keuken",
+      "kijk": 226.0,
+      "wat": "Staand in de opening naar de keuken. Recht vooruit de schouw, links de zithoek bij de ramen, rechts de kring rond de tv.",
+      "standpunt": "woonkamer-keuken-360"
+    },
+    {
+      "id": "bank",
+      "naam": "Op de bank",
+      "kijk": 38.0,
+      "wat": "Zittend op de noordelijkste plek van de halfronde bank. Recht vooruit de tv op de schuine muur.",
+      "standpunt": "woonkamer-tv-noord-360"
+    }
+  ]
+}
