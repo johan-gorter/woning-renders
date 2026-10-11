@@ -8,5 +8,7 @@ van de woning (repo `geulwijk-3d`). Bekijken: https://johangorter.com/woning-ren
 - `<rondkijker>/`: per rondkijker `index.html`, `rondkijker.json` (naam, standpunten, momenten), `omslag.jpg` en per
   standpunt en moment een equirectangulair panorama `<standpunt>-<moment>.jpg` van 4096 x 2048.
 
-Nieuwe rondkijker: in `geulwijk-3d` met `python3 tools/publiceer.py <naam> ...` (zie de uitleg in dat script), daarna hier
-committen en pushen.
+Nieuwe rondkijker: in de (privé) repo `geulwijk-3d` renderen en `python3 tools/publiceer.py <naam> ...` draaien; het
+stappenplan staat daar in `docs/werkwijze.md` onder "Publiceren: een rondkijker toevoegen". Daarna hier committen en
+pushen met het noreply-adres als auteur. Bewerk `index.html` niet met de hand: het overzicht wordt gegenereerd uit de
+`rondkijker.json` van elke map (met `bron`: hoe het gerenderd is).

@@ -3,6 +3,7 @@
   "naam": "Ronde bank",
   "beschrijving": "Halfronde bank en twee draaifauteuils rond een grote ronde tafel, open naar de tv. Bij de ramen een zithoek met twee Emily's; bureau, planten en lampen volgens feng shui.",
   "datum": "2026-10-11",
+  "bron": "variant ronde-bank in geulwijk-3d; dag: python3 tools/render.py --variant daglicht,ronde-bank --view woonkamer-keuken-360,woonkamer-tv-noord-360 --samples 48; avond: idem met --variant schemer,ronde-bank --samples 64",
   "momenten": [
     {
       "id": "dag",
