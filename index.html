@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Woonkamer Geulwijk</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&display=swap">
+<style>
+[hidden] { display: none !important; }
+/* Volledig scherm fotokijker: het panorama is het hele beeld, de bediening ligt er als rustige panelen overheen.
+   Bewust een donkere kijker (zoals een fotoviewer), in beide thema's gelijk. */
+:root {
+  --bg: #12110f;
+  --paneel: rgba(18, 17, 15, 0.62);
+  --tekst: #e9e4da;
+  --zacht: #b7afa2;
+  --rand: rgba(233, 228, 218, 0.28);
+  --linnen: #e8e2d4;
+  --op-linnen: #1b1a17;
+  --font: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--tekst); font: 14px/1.4 var(--font); overflow: hidden; }
+canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+canvas.drag { cursor: grabbing; }
+.paneel { background: var(--paneel); border-radius: 8px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#kop { position: fixed; left: 16px; top: calc(12px + env(safe-area-inset-top, 0px)); right: 16px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; pointer-events: none; }
+#kop > * { pointer-events: auto; }
+#naam { padding: 8px 12px; }
+#naam h1 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: 0.01em; text-wrap: balance; }
+#naam p { margin: 2px 0 0; color: var(--zacht); font-size: 13px; max-width: 58ch; }
+.rij { display: flex; flex-wrap: wrap; gap: 6px; }
+button { font: 600 13px var(--font); color: var(--tekst); background: var(--paneel); border: 1px solid var(--rand); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+button:hover { border-color: var(--linnen); }
+button:focus-visible { outline: 2px solid var(--linnen); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--linnen); color: var(--op-linnen); border-color: var(--linnen); }
+#voet { position: fixed; left: 16px; right: 16px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; pointer-events: none; }
+#hud, #hulp { padding: 6px 10px; font-size: 13px; }
+#hud { font-variant-numeric: tabular-nums; }
+#hud b { color: var(--linnen); }
+#hulp { color: var(--zacht); }
+#laden { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; color: var(--zacht); }
+@media (max-width: 620px) { #hulp { display: none; } #naam p { display: none; } }
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="360-gradenpanorama van de woonkamer; sleep om rond te kijken"></canvas>
+<div id="laden">Panorama laden…</div>
+<div id="kop">
+  <div id="naam" class="paneel">
+    <h1>Woonkamer Geulwijk</h1>
+    <p id="wat"></p>
+  </div>
+  <div class="rij" id="momenten" role="group" aria-label="Tijd van de dag"></div>
+  <div class="rij" id="plekken" role="group" aria-label="Standpunt"></div>
+</div>
+<div id="voet">
+  <div id="hud" class="paneel">kijkrichting <b id="richting">-</b> <span id="graden"></span> · zoom <span id="fov"></span>°</div>
+  <div id="hulp" class="paneel">slepen = rondkijken · scrollen of knijpen = zoom · pijltjes · 0 = beginstand</div>
+</div>
+
+<script>
+// kijk = kompasrichting (graden) van het midden van de afbeelding
+const PLEKKEN = [
+  {id: "keuken", naam: "Vanaf de keuken", kijk: 226, wat: "Staand in de opening naar de keuken. Recht vooruit de schouw, links de zithoek bij de ramen, rechts de kring rond de tv."},
+  {id: "bank", naam: "Op de bank", kijk: 38, wat: "Zittend op de noordelijkste plek van de halfronde bank. Recht vooruit de tv op de schuine muur."}
+];
+const MOMENTEN = [{id: "dag", naam: "Overdag"}, {id: "avond", naam: "'s Avonds"}];
+let plek = PLEKKEN[0], moment = MOMENTEN[0];
+
+const canvas = document.getElementById("c");
+const gl = canvas.getContext("webgl", {antialias: false});
+const ladenEl = document.getElementById("laden");
+if (!gl) ladenEl.textContent = "Deze browser ondersteunt geen WebGL; open de pagina in een recente browser.";
+const vs = `attribute vec2 p; varying vec2 v; void main(){ v = p; gl_Position = vec4(p, 0., 1.); }`;
+const fs = `precision highp float; varying vec2 v; uniform sampler2D t; uniform float yaw, pitch, tanHalf, aspect;
+void main(){
+  vec3 d = normalize(vec3(v.x * tanHalf * aspect, v.y * tanHalf, 1.0));
+  float cp = cos(pitch), sp = sin(pitch);
+  d = vec3(d.x, d.y * cp - d.z * sp, d.y * sp + d.z * cp);
+  float cy = cos(yaw), sy = sin(yaw);
+  d = vec3(d.x * cy + d.z * sy, d.y, -d.x * sy + d.z * cy);
+  float lon = atan(d.x, d.z);
+  float lat = asin(clamp(d.y, -1.0, 1.0));
+  gl_FragColor = texture2D(t, vec2(0.5 + lon / 6.2831853, 0.5 - lat / 3.1415927));
+}`;
+function shader(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+const prog = gl.createProgram();
+gl.attachShader(prog, shader(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog); gl.useProgram(prog);
+gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+const U = n => gl.getUniformLocation(prog, n);
+let yaw = 0, pitch = 0, fov = 75;
+const NAMEN = ["N", "NNO", "NO", "ONO", "O", "OZO", "ZO", "ZZO", "Z", "ZZW", "ZW", "WZW", "W", "WNW", "NW", "NNW"];
+const texturen = {};   // per bestand, geladen bij eerste gebruik
+
+function bestand() { return `${plek.id}-${moment.id}.jpg`; }
+function laad(naam) {
+  if (texturen[naam]) return texturen[naam];
+  const t = {tex: gl.createTexture(), klaar: false}; texturen[naam] = t;
+  const img = new Image();
+  img.onload = () => {
+    gl.bindTexture(gl.TEXTURE_2D, t.tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    t.klaar = true; if (naam === bestand()) teken();
+  };
+  img.onerror = () => { if (naam === bestand()) ladenEl.textContent = `${naam} kon niet worden geladen.`; };
+  img.src = naam;
+  return t;
+}
+function kies(nieuwePlek, nieuwMoment) {
+  if (nieuwePlek && nieuwePlek !== plek) { plek = nieuwePlek; yaw = 0; pitch = 0; }
+  if (nieuwMoment) moment = nieuwMoment;
+  document.getElementById("wat").textContent = plek.wat;
+  document.querySelectorAll("#plekken button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === plek.id));
+  document.querySelectorAll("#momenten button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === moment.id));
+  laad(bestand());
+  // het andere moment van dit standpunt alvast laden, dan wisselt dag/avond zonder wachten
+  MOMENTEN.forEach(m => laad(`${plek.id}-${m.id}.jpg`));
+  teken();
+}
+function knoppen(lijst, houder, actie) {
+  lijst.forEach(item => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = item.naam; b.dataset.id = item.id;
+    b.addEventListener("click", () => actie(item)); houder.appendChild(b);
+  });
+}
+knoppen(MOMENTEN, document.getElementById("momenten"), m => kies(null, m));
+knoppen(PLEKKEN, document.getElementById("plekken"), p => kies(p, null));
+
+function teken() {
+  if (!gl) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.round(canvas.clientWidth * dpr), h = Math.round(canvas.clientHeight * dpr);
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  gl.viewport(0, 0, w, h);
+  const t = texturen[bestand()];
+  ladenEl.hidden = !!(t && t.klaar);
+  if (!t || !t.klaar) return;
+  gl.bindTexture(gl.TEXTURE_2D, t.tex);
+  gl.uniform1f(U("yaw"), yaw); gl.uniform1f(U("pitch"), pitch);
+  gl.uniform1f(U("tanHalf"), Math.tan(fov * Math.PI / 360)); gl.uniform1f(U("aspect"), w / h);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  const az = ((plek.kijk + yaw * 180 / Math.PI) % 360 + 360) % 360;
+  document.getElementById("richting").textContent = NAMEN[Math.round(az / 22.5) % 16];
+  document.getElementById("graden").textContent = az.toFixed(0) + "°" + (pitch ? (pitch > 0 ? " ↑" : " ↓") + Math.abs(pitch * 180 / Math.PI).toFixed(0) + "°" : "");
+  document.getElementById("fov").textContent = fov.toFixed(0);
+}
+function begrensPitch() { const lim = Math.PI / 2 - 0.01; pitch = Math.max(-lim, Math.min(lim, pitch)); }
+let sleep = null, knijp = null;
+canvas.addEventListener("pointerdown", e => { sleep = {x: e.clientX, y: e.clientY, yaw, pitch}; canvas.classList.add("drag"); canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener("pointermove", e => {
+  if (!sleep || knijp) return;
+  const k = fov / 360 * Math.PI / canvas.clientHeight * 1.2;
+  yaw = sleep.yaw - (e.clientX - sleep.x) * k; pitch = sleep.pitch - (e.clientY - sleep.y) * k; begrensPitch(); teken();
+});
+const stop = () => { sleep = null; canvas.classList.remove("drag"); };
+canvas.addEventListener("pointerup", stop); canvas.addEventListener("pointercancel", stop);
+canvas.addEventListener("wheel", e => { e.preventDefault(); fov = Math.max(25, Math.min(120, fov * (e.deltaY > 0 ? 1.1 : 0.9))); teken(); }, {passive: false});
+const afstand = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+canvas.addEventListener("touchstart", e => { if (e.touches.length === 2) knijp = {d: afstand(e.touches), fov}; }, {passive: true});
+canvas.addEventListener("touchmove", e => { if (knijp && e.touches.length === 2) { fov = Math.max(25, Math.min(120, knijp.fov * knijp.d / afstand(e.touches))); teken(); } }, {passive: true});
+canvas.addEventListener("touchend", e => { if (e.touches.length < 2) knijp = null; });
+window.addEventListener("keydown", e => {
+  if (e.target.tagName === "BUTTON" && (e.key === "Enter" || e.key === " ")) return;
+  const s = 0.05;
+  if (e.key === "ArrowLeft") yaw -= s; else if (e.key === "ArrowRight") yaw += s;
+  else if (e.key === "ArrowUp") pitch += s; else if (e.key === "ArrowDown") pitch -= s;
+  else if (e.key === "0") { yaw = 0; pitch = 0; fov = 75; }
+  else return;
+  e.preventDefault(); begrensPitch(); teken();
+});
+window.addEventListener("resize", teken);
+kies(PLEKKEN[0], MOMENTEN[0]);
+</script>
+</body>
+</html>
