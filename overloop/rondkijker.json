@@ -1,0 +1,22 @@
+{
+  "slug": "overloop",
+  "naam": "Overloop",
+  "beschrijving": "De overloop op de eerste verdieping met het trapgat: een zwarte dichte trap naar zolder die om een vierkante paal draait, zwarte deuren en Driftwood wanden en plafond.",
+  "datum": "2026-10-20",
+  "bron": "variant overloop, standpunt overloop-360, 64 samples (render.py --variant overloop --view overloop-360 --samples 64 --out overloop)",
+  "momenten": [
+    {
+      "id": "dag",
+      "naam": "Overdag"
+    }
+  ],
+  "plekken": [
+    {
+      "id": "midden",
+      "naam": "Midden op de overloop",
+      "kijk": 0.0,
+      "wat": "Midden op de overloop, kijkend naar het trapgat met de trap naar zolder.",
+      "standpunt": "overloop-360"
+    }
+  ]
+}

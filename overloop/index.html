@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Overloop · Woning Geulwijk</title>
+<meta name="description" content="De overloop op de eerste verdieping met het trapgat: een zwarte dichte trap naar zolder die om een vierkante paal draait, zwarte deuren en Driftwood wanden en plafond.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="../kijker.css">
+</head>
+<body>
+<canvas id="c" aria-label="360-gradenpanorama; sleep om rond te kijken"></canvas>
+<div id="laden">Panorama laden…</div>
+<div id="kop">
+  <div id="naam" class="paneel">
+    <a href="../">← alle rondkijkers</a>
+    <h1 id="titel"></h1>
+    <p id="wat"></p>
+  </div>
+  <div class="rij" id="momenten" role="group" aria-label="Tijd van de dag"></div>
+  <div class="rij" id="plekken" role="group" aria-label="Standpunt"></div>
+</div>
+<div id="voet">
+  <div id="hud" class="paneel">kijkrichting <b id="richting">-</b> <span id="graden"></span> · zoom <span id="fov"></span>°</div>
+  <div id="hulp" class="paneel">slepen = rondkijken · scrollen of knijpen = zoom · pijltjes · 0 = beginstand</div>
+</div>
+<script>window.RONDKIJKER = {"naam": "Overloop", "plekken": [{"id": "midden", "naam": "Midden op de overloop", "kijk": 0.0, "wat": "Midden op de overloop, kijkend naar het trapgat met de trap naar zolder.", "standpunt": "overloop-360"}], "momenten": [{"id": "dag", "naam": "Overdag"}]};</script>
+<script src="../kijker.js"></script>
+</body>
+</html>
