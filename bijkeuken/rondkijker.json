@@ -1,0 +1,37 @@
+{
+  "slug": "bijkeuken",
+  "naam": "Bijkeuken",
+  "beschrijving": "De bijkeuken met zwarte deuren en kozijnen, Driftwood wanden, visgraatvloer, wasmachine-nis en keukenblok; door de open keukendeur kijk je de keuken in.",
+  "datum": "2026-10-20",
+  "bron": "basis, daglicht en schemer; standpunten bijkeuken-360 en bijkeuken-deuren-360, 48 samples (render.py --reeks basis,daglicht,schemer --view bijkeuken-360,bijkeuken-deuren-360 --samples 48 --out bijkeuken)",
+  "momenten": [
+    {
+      "id": "dag",
+      "naam": "Overdag"
+    },
+    {
+      "id": "zon",
+      "naam": "Zonnig"
+    },
+    {
+      "id": "avond",
+      "naam": "'s Avonds"
+    }
+  ],
+  "plekken": [
+    {
+      "id": "midden",
+      "naam": "Midden in de bijkeuken",
+      "kijk": 90.0,
+      "wat": "Midden in de bijkeuken, kijkend naar de ramen.",
+      "standpunt": "bijkeuken-360"
+    },
+    {
+      "id": "deuren",
+      "naam": "Bij de keukendeur",
+      "kijk": 0.0,
+      "wat": "Tussen buitendeur en keukendeur, kijkend door de lange ruimte.",
+      "standpunt": "bijkeuken-deuren-360"
+    }
+  ]
+}

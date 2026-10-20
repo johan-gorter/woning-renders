@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bijkeuken · Woning Geulwijk</title>
+<meta name="description" content="De bijkeuken met zwarte deuren en kozijnen, Driftwood wanden, visgraatvloer, wasmachine-nis en keukenblok; door de open keukendeur kijk je de keuken in.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="../kijker.css">
+</head>
+<body>
+<canvas id="c" aria-label="360-gradenpanorama; sleep om rond te kijken"></canvas>
+<div id="laden">Panorama laden…</div>
+<div id="kop">
+  <div id="naam" class="paneel">
+    <a href="../">← alle rondkijkers</a>
+    <h1 id="titel"></h1>
+    <p id="wat"></p>
+  </div>
+  <div class="rij" id="momenten" role="group" aria-label="Tijd van de dag"></div>
+  <div class="rij" id="plekken" role="group" aria-label="Standpunt"></div>
+</div>
+<div id="voet">
+  <div id="hud" class="paneel">kijkrichting <b id="richting">-</b> <span id="graden"></span> · zoom <span id="fov"></span>°</div>
+  <div id="hulp" class="paneel">slepen = rondkijken · scrollen of knijpen = zoom · pijltjes · 0 = beginstand</div>
+</div>
+<script>window.RONDKIJKER = {"naam": "Bijkeuken", "plekken": [{"id": "midden", "naam": "Midden in de bijkeuken", "kijk": 90.0, "wat": "Midden in de bijkeuken, kijkend naar de ramen.", "standpunt": "bijkeuken-360"}, {"id": "deuren", "naam": "Bij de keukendeur", "kijk": 0.0, "wat": "Tussen buitendeur en keukendeur, kijkend door de lange ruimte.", "standpunt": "bijkeuken-deuren-360"}], "momenten": [{"id": "dag", "naam": "Overdag"}, {"id": "zon", "naam": "Zonnig"}, {"id": "avond", "naam": "'s Avonds"}]};</script>
+<script src="../kijker.js"></script>
+</body>
+</html>
