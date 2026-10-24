@@ -1,0 +1,37 @@
+{
+  "slug": "keuken",
+  "naam": "Keuken",
+  "beschrijving": "De keuken met kookeiland en eettafel onder het schuine dak. Vergelijk de schuine wand in Driftwood-stuc met akoestisch vilt (Stockholm in Sand, golvende groeven van goot naar nok).",
+  "datum": "2026-10-24",
+  "bron": "dag stuc: --variant daglicht; dag vilt: --variant daglicht,vilt-helling; avond vilt: --variant schemer,vilt-helling; render.py --reeks daglicht,daglicht+vilt-helling,schemer+vilt-helling --view keuken-360,eettafel-stoel-360 --samples 48 --detail 2 --out keuken-vilt",
+  "momenten": [
+    {
+      "id": "stuc",
+      "naam": "Stuc (nu)"
+    },
+    {
+      "id": "vilt",
+      "naam": "Vilt"
+    },
+    {
+      "id": "vilt-avond",
+      "naam": "Vilt 's avonds"
+    }
+  ],
+  "plekken": [
+    {
+      "id": "midden",
+      "naam": "Tussen eiland en eettafel",
+      "kijk": 270.0,
+      "wat": "Tussen kookeiland en eettafel; vooruit het eiland en het aanrecht, boven je de schuine wand.",
+      "standpunt": "keuken-360"
+    },
+    {
+      "id": "eettafel",
+      "naam": "Aan de eettafel",
+      "kijk": 270.0,
+      "wat": "Zittend aan de oostkant van de eettafel, recht onder de schuine wand.",
+      "standpunt": "eettafel-stoel-360"
+    }
+  ]
+}
