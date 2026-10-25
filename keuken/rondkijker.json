@@ -1,21 +1,35 @@
 {
   "slug": "keuken",
   "naam": "Keuken",
-  "beschrijving": "De keuken met kookeiland en eettafel onder het schuine dak. Vergelijk de schuine wand in Driftwood-stuc met akoestisch vilt (Stockholm in Sand, golvende groeven van goot naar nok).",
-  "datum": "2026-10-24",
-  "bron": "dag stuc: --variant daglicht; dag vilt: --variant daglicht,vilt-helling; avond vilt: --variant schemer,vilt-helling; render.py --reeks daglicht,daglicht+vilt-helling,schemer+vilt-helling --view keuken-360,eettafel-stoel-360 --samples 48 --detail 2 --out keuken-vilt",
+  "beschrijving": "De keuken met kookeiland en eettafel onder het zadeldak: twee schuine kanten met een gelakte Driftwood-plank in de nok. Vergelijk het plafond in Driftwood-stuc met akoestisch vilt (Stockholm in Sand, golvende groeven van goot naar nok) op beide kanten of alleen op de oostkant.",
+  "datum": "2026-10-25",
+  "bron": "render.py --view keuken-360,eettafel-stoel-360 --reeks basis,daglicht,schemer --detail 4 --samples 64, per uitvoering: zonder variant (stuc), --variant vilt-helling, --variant vilt-oost; --out keuken-hellingen/<uitvoering>",
   "momenten": [
     {
+      "id": "dag",
+      "naam": "Overdag"
+    },
+    {
+      "id": "zon",
+      "naam": "Zonnig"
+    },
+    {
+      "id": "avond",
+      "naam": "'s Avonds"
+    }
+  ],
+  "varianten": [
+    {
       "id": "stuc",
-      "naam": "Stuc (nu)"
+      "naam": "Stuc"
     },
     {
-      "id": "vilt",
-      "naam": "Vilt"
+      "id": "vilt-helling",
+      "naam": "Vilt beide kanten"
     },
     {
-      "id": "vilt-avond",
-      "naam": "Vilt 's avonds"
+      "id": "vilt-oost",
+      "naam": "Vilt alleen oost"
     }
   ],
   "plekken": [
@@ -23,14 +37,14 @@
       "id": "midden",
       "naam": "Tussen eiland en eettafel",
       "kijk": 270.0,
-      "wat": "Tussen kookeiland en eettafel; vooruit het eiland en het aanrecht, boven je de schuine wand.",
+      "wat": "Tussen kookeiland en eettafel; vooruit het eiland en het aanrecht, boven je beide schuine kanten met de nokplank.",
       "standpunt": "keuken-360"
     },
     {
       "id": "eettafel",
       "naam": "Aan de eettafel",
       "kijk": 270.0,
-      "wat": "Zittend aan de oostkant van de eettafel, recht onder de schuine wand.",
+      "wat": "Zittend aan de oostkant van de eettafel, onder de oostelijke schuine kant.",
       "standpunt": "eettafel-stoel-360"
     }
   ]

@@ -1,11 +1,12 @@
 // Rondkijker: WebGL-kijker voor equirectangulaire panorama's, zonder bibliotheken.
 // Instellingen in window.RONDKIJKER (gezet door index.html van de rondkijker):
-//   {naam, plekken: [{id, naam, kijk, wat}], momenten: [{id, naam}]}; beeld per plek en moment: <plek>-<moment>.jpg
+//   {naam, plekken: [{id, naam, kijk, wat}], momenten: [{id, naam}], varianten: [{id, naam}] (optioneel)};
+//   beeld per plek en moment: <plek>-<moment>.jpg, met varianten <plek>-<variant>-<moment>.jpg
 //   kijk = kompasrichting (graden) van het midden van de afbeelding.
 (function () {
   const R = window.RONDKIJKER;
-  const PLEKKEN = R.plekken, MOMENTEN = R.momenten;
-  let plek = PLEKKEN[0], moment = MOMENTEN[0];
+  const PLEKKEN = R.plekken, MOMENTEN = R.momenten, VARIANTEN = R.varianten || [];
+  let plek = PLEKKEN[0], moment = MOMENTEN[0], variant = VARIANTEN[0];
   document.getElementById("titel").textContent = R.naam;
 
   const canvas = document.getElementById("c");
@@ -33,16 +34,24 @@
   const U = n => gl.getUniformLocation(prog, n);
   let yaw = 0, pitch = 0, fov = 75;
   const NAMEN = ["N", "NNO", "NO", "ONO", "O", "OZO", "ZO", "ZZO", "Z", "ZZW", "ZW", "WZW", "W", "WNW", "NW", "NNW"];
-  const texturen = {};   // per bestand, geladen bij eerste gebruik
+  const texturen = {};   // per bestand, geladen bij eerste gebruik; alleen die van de huidige plek (beelden tot 8192 breed)
+  const MAX_TEX = gl.getParameter(gl.MAX_TEXTURE_SIZE);
 
-  function bestand(p = plek, m = moment) { return `${p.id}-${m.id}.jpg`; }
+  function bestand(p = plek, m = moment, v = variant) { return v ? `${p.id}-${v.id}-${m.id}.jpg` : `${p.id}-${m.id}.jpg`; }
   function laad(naam) {
     if (texturen[naam]) return;
     const t = {tex: gl.createTexture(), klaar: false}; texturen[naam] = t;
     const img = new Image();
     img.onload = () => {
+      if (!texturen[naam]) return;   // intussen losgelaten (andere plek)
+      // groter dan het toestel aankan (telefoons: vaak 4096): eerst verkleinen
+      let bron = img;
+      if (img.width > MAX_TEX) {
+        bron = document.createElement("canvas"); bron.width = MAX_TEX; bron.height = Math.round(img.height * MAX_TEX / img.width);
+        bron.getContext("2d").drawImage(img, 0, 0, bron.width, bron.height);
+      }
       gl.bindTexture(gl.TEXTURE_2D, t.tex);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, bron);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       t.klaar = true; if (naam === bestand()) teken();
@@ -50,14 +59,20 @@
     img.onerror = () => { if (naam === bestand()) ladenEl.textContent = `${naam} kon niet worden geladen.`; };
     img.src = naam;
   }
-  function kies(nieuwePlek, nieuwMoment) {
-    if (nieuwePlek && nieuwePlek !== plek) { plek = nieuwePlek; yaw = 0; pitch = 0; }
+  function kies(nieuwePlek, nieuwMoment, nieuweVariant) {
+    if (nieuwePlek && nieuwePlek !== plek) {
+      plek = nieuwePlek; yaw = 0; pitch = 0;
+      for (const naam in texturen) if (!naam.startsWith(plek.id + "-")) { gl.deleteTexture(texturen[naam].tex); delete texturen[naam]; }
+    }
     if (nieuwMoment) moment = nieuwMoment;
+    if (nieuweVariant) variant = nieuweVariant;
     document.getElementById("wat").textContent = plek.wat || "";
     document.querySelectorAll("#plekken button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === plek.id));
     document.querySelectorAll("#momenten button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === moment.id));
+    document.querySelectorAll("#varianten button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === (variant && variant.id)));
     laad(bestand());
     MOMENTEN.forEach(m => laad(bestand(plek, m)));   // de andere momenten van dit standpunt alvast laden
+    VARIANTEN.forEach(v => laad(bestand(plek, moment, v)));   // en de andere varianten bij dit moment
     teken();
   }
   function knoppen(lijst, houder, actie) {
@@ -67,6 +82,7 @@
       b.addEventListener("click", () => actie(item)); houder.appendChild(b);
     });
   }
+  knoppen(VARIANTEN, document.getElementById("varianten"), v => kies(null, null, v));
   knoppen(MOMENTEN, document.getElementById("momenten"), m => kies(null, m));
   knoppen(PLEKKEN, document.getElementById("plekken"), p => kies(p, null));
 
